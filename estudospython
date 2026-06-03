@@ -1,242 +1,146 @@
 print("Bem-vindo a Elite Way School")
 
-
-
 # ==================== FUNÇÕES ====================
 
-
-
 def ler_nota(mensagem):
-
-  while True:
-
-    nota = float(input(mensagem))
-
-    if 0 <= nota <= 10:
-
-      return nota
-
-    else:
-
-      print("Nota inválida! Digite um valor entre 0 e 10.")
-
+    while True:
+        nota = float(input(mensagem))
+        if 0 <= nota <= 10:
+            return nota
+        else:
+            print("Nota inválida! Digite um valor entre 0 e 10.")
 
 
 def ler_frequencia():
-
-  while True:
-
-    freq = float(input("Digite a frequência (%): "))
-
-    if 0 <= freq <= 100:
-
-      return freq
-
-    else:
-
-      print("Frequência inválida! Digite entre 0 e 100.")
-
+    while True:
+        freq = float(input("Digite a frequência (%): "))
+        if 0 <= freq <= 100:
+            return freq
+        else:
+            print("Frequência inválida! Digite entre 0 e 100.")
 
 
 def calcular_nota(n1, n2):
-
-  media = (n1 + n2) / 2
-
-  return media
-
+    media = (n1 + n2) / 2
+    return media
 
 
 def calcular_frequencia(frequencia):
-
-  if frequencia < 75:
-
-    return "Reprovado por frequência"
-
-  return None
-
+    if frequencia < 75:
+        return "Reprovado por frequência"
+    return None
 
 
 def calcular_situacao(media, frequencia):
+    reprovado_freq = calcular_frequencia(frequencia)
 
-  reprovado_freq = calcular_frequencia(frequencia)
-
-  if reprovado_freq:
-
-    return reprovado_freq
-
-  elif media >= 6:
-
-    return "Aprovado"
-
-  else:
-
-    return "Reprovado por nota"
-
+    if reprovado_freq:
+        return reprovado_freq
+    elif media >= 6:
+        return "Aprovado"
+    else:
+        return "Reprovado por nota"
 
 
 def cadastrar_dados(nome, disciplinas):
-
-  registro_aluno = {
-
-    "nome": nome,
-
-    "disciplinas": {}
-
-  }
-
-
-
-  for materia in disciplinas:
-
-    print(f"\n--- {materia} ---")
-
-
-
-    n1 = ler_nota("Digite a nota da A1: ")
-
-    n2 = ler_nota("Digite a nota da A2: ")
-
-    frequencia = ler_frequencia()
-
-
-
-    media = calcular_nota(n1, n2)
-
-    situacao = calcular_situacao(media, frequencia)
-
-
-
-    registro_aluno["disciplinas"][materia] = {
-
-      "notas": [n1, n2],
-
-      "media": media,
-
-      "frequencia": frequencia,
-
-      "situacao": situacao
-
+    registro_aluno = {
+        "nome": nome,
+        "disciplinas": {}
     }
 
+    for materia in disciplinas:
+        print(f"\n--- {materia} ---")
 
+        n1 = ler_nota("Digite a nota da A1: ")
+        n2 = ler_nota("Digite a nota da A2: ")
+        frequencia = ler_frequencia()
 
-  return registro_aluno
+        media = calcular_nota(n1, n2)
+        situacao = calcular_situacao(media, frequencia)
 
+        registro_aluno["disciplinas"][materia] = {
+            "notas": [n1, n2],
+            "media": media,
+            "frequencia": frequencia,
+            "situacao": situacao
+        }
+
+    return registro_aluno
 
 
 def processar_resultados(registro_aluno):
+    aprovados = []
+    reprovados_nota = []
+    reprovados_freq = []
+    todas_medias = []
 
-  aprovados = []
+    for materia, dados in registro_aluno["disciplinas"].items():
+        todas_medias.append(dados["media"])
 
-  reprovados_nota = []
+        if dados["situacao"] == "Aprovado":
+            aprovados.append(materia)
+        elif dados["situacao"] == "Reprovado por nota":
+            reprovados_nota.append(materia)
+        else:
+            reprovados_freq.append(materia)
 
-  reprovados_freq = []
+    media_geral = sum(todas_medias) / len(todas_medias)
 
-  todas_medias = []
-
-
-
-  for materia, dados in registro_aluno["disciplinas"].items():
-
-    todas_medias.append(dados["media"])
-
-
-
-    if dados["situacao"] == "Aprovado":
-
-      aprovados.append(materia)
-
-    elif dados["situacao"] == "Reprovado por nota":
-
-      reprovados_nota.append(materia)
-
-    else:
-
-      reprovados_freq.append(materia)
-
-
-
-  media_geral = sum(todas_medias) / len(todas_medias)
-
-
-
-  return aprovados, reprovados_nota, reprovados_freq, media_geral
-
+    return aprovados, reprovados_nota, reprovados_freq, media_geral
 
 
 def gerar_relatorio(registro_aluno):
+    aprovados, reprovados_nota, reprovados_freq, media_geral = processar_resultados(registro_aluno)
 
-  aprovados, reprovados_nota, reprovados_freq, media_geral = processar_resultados(registro_aluno)
+    print(f"\n{'=' * 45}")
+    print(f"  BOLETIM ESCOLAR - {registro_aluno['nome'].upper()}")
+    print(f"{'=' * 45}")
 
+    print(f"\n{'Disciplina':<15} {'Média':>6} {'Frequência':>12} {'Situação'}")
+    print(f"{'-' * 55}")
 
+    for materia, dados in registro_aluno["disciplinas"].items():
+        print(
+            f"{materia:<15} "
+            f"{dados['media']:>6.2f} "
+            f"{dados['frequencia']:>11.1f}% "
+            f"{dados['situacao']}"
+        )
 
-  print(f"\n{'='*45}")
+    print(f"\n{'=' * 45}")
+    print(" RESUMO GERAL")
+    print(f"{'=' * 45}")
 
-  print(f"   BOLETIM ESCOLAR - {registro_aluno['nome'].upper()}")
+    print(f" Média geral do aluno : {media_geral:.2f}")
+    print(f" Total aprovado : {len(aprovados)} disciplina(s)")
+    print(f" Reprovado por nota : {len(reprovados_nota)} disciplina(s)")
+    print(f" Reprovado por freq. : {len(reprovados_freq)} disciplina(s)")
 
-  print(f"{'='*45}")
+    if aprovados:
+        print(f"\n✔ Aprovado em : {', '.join(aprovados)}")
 
+    if reprovados_nota:
+        print(f"✘ Reprov. por nota : {', '.join(reprovados_nota)}")
 
+    if reprovados_freq:
+        print(f"✘ Reprov. por freq. : {', '.join(reprovados_freq)}")
 
-  print(f"\n{'Disciplina':<15} {'Média':>6} {'Frequência':>12} {'Situação'}")
-
-  print(f"{'-'*55}")
-
-
-
-  for materia, dados in registro_aluno["disciplinas"].items():
-
-    print(f"{materia:<15} {dados['media']:>6.2f} {dados['frequencia']:>11.1f}%  {dados['situacao']}")
-
-
-
-  print(f"\n{'='*45}")
-
-  print(f" RESUMO GERAL")
-
-  print(f"{'='*45}")
-
-  print(f" Média geral do aluno : {media_geral:.2f}")
-
-  print(f" Total aprovado    : {len(aprovados)} disciplina(s)")
-
-  print(f" Reprovado por nota  : {len(reprovados_nota)} disciplina(s)")
-
-  print(f" Reprovado por freq. : {len(reprovados_freq)} disciplina(s)")
-
-
-
-  if aprovados:
-
-    print(f"\n ✔ Aprovado em    : {', '.join(aprovados)}")
-
-  if reprovados_nota:
-
-    print(f" ✘ Reprov. por nota : {', '.join(reprovados_nota)}")
-
-  if reprovados_freq:
-
-    print(f" ✘ Reprov. por freq. : {', '.join(reprovados_freq)}")
-
-
-
-  print(f"\n{'='*45}")
-
+    print(f"\n{'=' * 45}")
 
 
 # ==================== PROGRAMA PRINCIPAL ====================
 
-
-
-disciplinas = ["Português", "Matemática", "Geografia", "História", "Ciências", "Artes"]
-
-
+disciplinas = [
+    "Português",
+    "Matemática",
+    "Geografia",
+    "História",
+    "Ciências",
+    "Artes"
+]
 
 nome = input("Digite seu nome: ")
-
 print("Olá,", nome)
-
-
 
 registro_aluno = cadastrar_dados(nome, disciplinas)
 
